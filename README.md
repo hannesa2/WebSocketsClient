@@ -3,17 +3,6 @@ WebSocketsClient
 
 Sample WebSocket client application for Android devices - more info soon
 
-Screenshots
-===========
-
-![Screenshot](http://www.lukasz-skalski.com/wp-content/uploads/2014/11/WebSocketsClient_01.png)
-![Screenshot](http://www.lukasz-skalski.com/wp-content/uploads/2014/11/WebSocketsClient_03.png)
-![Screenshot](http://www.lukasz-skalski.com/wp-content/uploads/2014/11/WebSocketsClient_04.png)
-
-![Screenshot](http://www.lukasz-skalski.com/wp-content/uploads/2014/11/WebSocketsClient_05.png)
-![Screenshot](http://www.lukasz-skalski.com/wp-content/uploads/2014/11/WebSocketsClient_06.png)
-![Screenshot](http://www.lukasz-skalski.com/wp-content/uploads/2014/11/WebSocketsClient_07.png)
-
 Video
 =====
 
