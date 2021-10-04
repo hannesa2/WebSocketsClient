@@ -65,7 +65,6 @@ public class ActivityMain extends Activity implements WebSocket.WebSocketConnect
 
     private volatile boolean isConnected = false;
     private WebSocketConnection wsConnection;
-    private WebSocketOptions wsOptions;
     private URI wsURI;
 
     private EditText cmdInput;
@@ -89,13 +88,13 @@ public class ActivityMain extends Activity implements WebSocket.WebSocketConnect
         wrappers.add(onClickWrapperExit);
         SuperActivityToast.onRestoreState(savedInstanceState, ActivityMain.this, wrappers);
 
-        hostname = (EditText) findViewById(R.id.hostname);
-        portNumber = (EditText) findViewById(R.id.port);
-        timeout = (EditText) findViewById(R.id.timeout);
+        hostname = findViewById(R.id.hostname);
+        portNumber = findViewById(R.id.port);
+        timeout = findViewById(R.id.timeout);
 
-        cmdInput = (EditText) findViewById(R.id.cmdInput);
-        cmdOutput = (TextView) findViewById(R.id.cmdOutput);
-        connectButton = (CircularProgressButton) findViewById(R.id.btnConnect);
+        cmdInput = findViewById(R.id.cmdInput);
+        cmdOutput = findViewById(R.id.cmdOutput);
+        connectButton = findViewById(R.id.btnConnect);
 
         cmdOutput.setMovementMethod(new ScrollingMovementMethod());
         connectButton.setIndeterminateProgressMode(true);
@@ -173,7 +172,7 @@ public class ActivityMain extends Activity implements WebSocket.WebSocketConnect
         if (!this.isConnected) {
 
             this.wsConnection = new WebSocketConnection();
-            this.wsOptions = new WebSocketOptions();
+            WebSocketOptions wsOptions = new WebSocketOptions();
             wsOptions.setSocketConnectTimeout(Integer.parseInt(timeout.getText().toString()));
 
             try {
