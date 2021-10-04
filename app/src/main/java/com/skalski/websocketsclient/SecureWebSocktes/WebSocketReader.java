@@ -369,7 +369,7 @@ public class WebSocketReader extends Thread {
                             } else {
 
                                 // dispatch WS text message as Java String (previously already validated)
-                                String s = mMessagePayload.toString(StandardCharsets.UTF_8);
+                                String s = mMessagePayload.toString(String.valueOf(StandardCharsets.UTF_8));
                                 onTextMessage(s);
                             }
 
