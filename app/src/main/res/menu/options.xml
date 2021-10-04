@@ -19,14 +19,16 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".ActivityMain" >
+    tools:context=".ActivityMain">
 
-    <item android:id="@+id/action_settings"
+    <item
+        android:id="@+id/action_settings"
         android:title="@string/action_settings"
         android:icon="@drawable/icon_dark_edit"
         android:showAsAction="always" />
 
-    <item android:id="@+id/action_licenses"
+    <item
+        android:id="@+id/action_licenses"
         android:title="@string/action_licenses"
         android:icon="@drawable/icon_dark_info"
         android:showAsAction="always" />

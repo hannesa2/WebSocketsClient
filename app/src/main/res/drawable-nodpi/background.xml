@@ -19,8 +19,6 @@
 
 <!-- ic_background.png file licensed under CC-BY-SA-3.0 -->
 
-<bitmap
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<bitmap xmlns:android="http://schemas.android.com/apk/res/android"
     android:src="@drawable/ic_background"
-    android:tileMode="repeat"
-/>
+    android:tileMode="repeat" />

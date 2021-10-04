@@ -38,11 +38,7 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
-import java.net.URI;
-import java.net.URISyntaxException;
-import org.json.JSONException;
-import org.json.JSONObject;
-import de.psdev.licensesdialog.LicensesDialog;
+
 import com.dd.CircularProgressButton;
 import com.github.johnpersano.supertoasts.SuperActivityToast;
 import com.github.johnpersano.supertoasts.SuperToast;
@@ -53,11 +49,19 @@ import com.skalski.websocketsclient.SecureWebSocktes.WebSocketConnection;
 import com.skalski.websocketsclient.SecureWebSocktes.WebSocketException;
 import com.skalski.websocketsclient.SecureWebSocktes.WebSocketOptions;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import de.psdev.licensesdialog.LicensesDialog;
+
 public class ActivityMain extends Activity implements WebSocket.WebSocketConnectionObserver {
 
     private static final String TAG_LOG = "WebSocketsClient";
     private static final String TAG_JSON_TYPE = "Type";
-    private static final String TAG_JSON_MSG  = "Message";
+    private static final String TAG_JSON_MSG = "Message";
 
     private volatile boolean isConnected = false;
     private WebSocketConnection wsConnection;
@@ -76,10 +80,10 @@ public class ActivityMain extends Activity implements WebSocket.WebSocketConnect
      * ActivityMain - onCreate()
      */
     @Override
-    protected void onCreate (Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
 
-        super.onCreate (savedInstanceState);
-        setContentView (R.layout.activity_main);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
         Wrappers wrappers = new Wrappers();
         wrappers.add(onClickWrapperExit);
@@ -93,13 +97,13 @@ public class ActivityMain extends Activity implements WebSocket.WebSocketConnect
         cmdOutput = (TextView) findViewById(R.id.cmdOutput);
         connectButton = (CircularProgressButton) findViewById(R.id.btnConnect);
 
-        cmdOutput.setMovementMethod (new ScrollingMovementMethod());
-        connectButton.setIndeterminateProgressMode (true);
+        cmdOutput.setMovementMethod(new ScrollingMovementMethod());
+        connectButton.setIndeterminateProgressMode(true);
 
         /*
          * connectButton - onClickListener()
          */
-        connectButton.setOnClickListener (new View.OnClickListener() {
+        connectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -107,13 +111,13 @@ public class ActivityMain extends Activity implements WebSocket.WebSocketConnect
                     connectButton.setProgress(50);
 
                     if ((hostname.getText().toString().equals("")) ||
-                        (portNumber.getText().toString().equals("")) ||
-                        (timeout.getText().toString().equals(""))) {
+                            (portNumber.getText().toString().equals("")) ||
+                            (timeout.getText().toString().equals(""))) {
 
-                            Log.e(TAG_LOG, "Invalid connection settings");
-                            show_info(getResources().getString(R.string.info_msg_1), false);
-                            connectButton.setProgress(-1);
-                            return;
+                        Log.e(TAG_LOG, "Invalid connection settings");
+                        show_info(getResources().getString(R.string.info_msg_1), false);
+                        connectButton.setProgress(-1);
+                        return;
                     }
 
                     /* save last settings */
@@ -136,7 +140,7 @@ public class ActivityMain extends Activity implements WebSocket.WebSocketConnect
         /*
          * cmdInput - OnEditorActionListener()
          */
-        cmdInput.setOnEditorActionListener (new EditText.OnEditorActionListener() {
+        cmdInput.setOnEditorActionListener(new EditText.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
@@ -176,25 +180,25 @@ public class ActivityMain extends Activity implements WebSocket.WebSocketConnect
                 this.wsURI = new URI("ws://" + hostname.getText().toString() + ":" + portNumber.getText().toString());
                 wsConnection.connect(wsURI, this, wsOptions);
             } catch (WebSocketException e) {
-                Log.e(TAG_LOG,  "Can't connect to server - 'WebSocketException'");
+                Log.e(TAG_LOG, "Can't connect to server - 'WebSocketException'");
                 this.isConnected = false;
                 return false;
             } catch (URISyntaxException e1) {
-                Log.e (TAG_LOG, "Can't connect to server - 'URISyntaxException'");
+                Log.e(TAG_LOG, "Can't connect to server - 'URISyntaxException'");
                 this.isConnected = false;
                 return false;
             } catch (Exception ex) {
-                Log.e (TAG_LOG, "Can't connect to server - 'Exception'");
+                Log.e(TAG_LOG, "Can't connect to server - 'Exception'");
                 this.isConnected = false;
                 return false;
             }
 
-            Log.i (TAG_LOG, "Connected");
+            Log.i(TAG_LOG, "Connected");
             this.isConnected = true;
             return true;
         }
 
-        Log.w (TAG_LOG, "You are already connected to the server");
+        Log.w(TAG_LOG, "You are already connected to the server");
         return true;
     }
 
@@ -203,7 +207,7 @@ public class ActivityMain extends Activity implements WebSocket.WebSocketConnect
      */
     void wsDisconnect() {
         if (isConnected) {
-            Log.i (TAG_LOG, "Disconnected");
+            Log.i(TAG_LOG, "Disconnected");
             wsConnection.disconnect();
             connectButton.setProgress(0);
         }
@@ -216,7 +220,7 @@ public class ActivityMain extends Activity implements WebSocket.WebSocketConnect
         if (isConnected) {
 
             /* send message to the server */
-            Log.i (TAG_LOG, "Message has been successfully sent");
+            Log.i(TAG_LOG, "Message has been successfully sent");
             wsConnection.sendTextMessage(cmdInput.getText().toString());
             appendText(cmdOutput, "[CLIENT] " + cmdInput.getText().toString() + "\n", Color.RED);
 
@@ -235,7 +239,7 @@ public class ActivityMain extends Activity implements WebSocket.WebSocketConnect
     @Override
     public void onOpen() {
 
-        Log.i (TAG_LOG, "onOpen() - connection opened to: " + wsURI.toString());
+        Log.i(TAG_LOG, "onOpen() - connection opened to: " + wsURI.toString());
         this.isConnected = true;
         connectButton.setProgress(100);
     }
@@ -244,9 +248,9 @@ public class ActivityMain extends Activity implements WebSocket.WebSocketConnect
      * SecureWebSockets - onClose()
      */
     @Override
-    public void onClose (WebSocketCloseNotification code, String reason) {
+    public void onClose(WebSocketCloseNotification code, String reason) {
 
-        Log.i (TAG_LOG, "onClose() - " + code.name() + ", " + reason);
+        Log.i(TAG_LOG, "onClose() - " + code.name() + ", " + reason);
         this.isConnected = false;
         connectButton.setProgress(0);
     }
@@ -255,7 +259,7 @@ public class ActivityMain extends Activity implements WebSocket.WebSocketConnect
      * SecureWebSockets - onTextMessage()
      */
     @Override
-    public void onTextMessage (String payload) {
+    public void onTextMessage(String payload) {
 
         try {
 
@@ -294,26 +298,26 @@ public class ActivityMain extends Activity implements WebSocket.WebSocketConnect
                         appendText(cmdOutput, "[SERVER] Asynchronous Notification\n", Color.parseColor("#ff0099cc"));
                     }
 
-                /*
-                 * Standard message
-                 */
+                    /*
+                     * Standard message
+                     */
                 } else if (jsonObj.getString(TAG_JSON_TYPE).equals("standard")) {
 
                     appendText(cmdOutput, "[SERVER] " + jsonObj.getString(TAG_JSON_MSG) + "\n", Color.parseColor("#ff99cc00"));
 
-                /*
-                 * JSON object is not valid
-                 */
+                    /*
+                     * JSON object is not valid
+                     */
                 } else {
-                    show_info (getResources().getString(R.string.info_msg_4), false);
-                    Log.e (TAG_LOG, "Received invalid JSON from server");
+                    show_info(getResources().getString(R.string.info_msg_4), false);
+                    Log.e(TAG_LOG, "Received invalid JSON from server");
                 }
             }
         } catch (JSONException e) {
 
             /* JSON object is not valid */
-            show_info (getResources().getString(R.string.info_msg_4), false);
-            Log.e (TAG_LOG, "Received invalid JSON from server");
+            show_info(getResources().getString(R.string.info_msg_4), false);
+            Log.e(TAG_LOG, "Received invalid JSON from server");
         }
     }
 
@@ -321,22 +325,22 @@ public class ActivityMain extends Activity implements WebSocket.WebSocketConnect
      * SecureWebSockets - onRawTextMessage()
      */
     @Override
-    public void onRawTextMessage (byte[] payload) {
-        Log.wtf (TAG_LOG, "We didn't expect 'RawTextMessage'");
+    public void onRawTextMessage(byte[] payload) {
+        Log.wtf(TAG_LOG, "We didn't expect 'RawTextMessage'");
     }
 
     /*
      * SecureWebSockets - onBinaryMessage()
      */
     @Override
-    public void onBinaryMessage (byte[] payload) {
-        Log.wtf (TAG_LOG, "We didn't expect 'BinaryMessage'");
+    public void onBinaryMessage(byte[] payload) {
+        Log.wtf(TAG_LOG, "We didn't expect 'BinaryMessage'");
     }
 
     /*
      * ActivityMain - show_info()
      */
-    void show_info (String info, boolean showButton) {
+    void show_info(String info, boolean showButton) {
 
         SuperActivityToast superActivityToast;
 
@@ -359,7 +363,7 @@ public class ActivityMain extends Activity implements WebSocket.WebSocketConnect
     /*
      * ActivityMain - appendText()
      */
-    static void appendText (TextView textView, String text, int textColor) {
+    static void appendText(TextView textView, String text, int textColor) {
 
         int start;
         int end;
@@ -386,7 +390,7 @@ public class ActivityMain extends Activity implements WebSocket.WebSocketConnect
      * ActivityMain - onOptionsItemSelected()
      */
     @Override
-    public boolean onOptionsItemSelected (MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
         /* show 'Settings' */
@@ -396,7 +400,7 @@ public class ActivityMain extends Activity implements WebSocket.WebSocketConnect
             startActivity(intent);
             return true;
 
-        /* show 'Open Source Licenses' */
+            /* show 'Open Source Licenses' */
         } else if (id == R.id.action_licenses) {
             Log.i(TAG_LOG, "Starting 'LicensesDialog'");
             new LicensesDialog(ActivityMain.this, R.raw.notices, false, true).show();
@@ -409,7 +413,7 @@ public class ActivityMain extends Activity implements WebSocket.WebSocketConnect
      * ActivityMain - onKeyDown()
      */
     @Override
-    public boolean onKeyDown (int keyCode, KeyEvent event) {
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
             onBackPressed();
         }
@@ -431,7 +435,7 @@ public class ActivityMain extends Activity implements WebSocket.WebSocketConnect
      * ActivityMain - onBackPressed()
      */
     @Override
-    public void onBackPressed () {
+    public void onBackPressed() {
         show_info(getResources().getString(R.string.info_msg_3), true);
     }
 }

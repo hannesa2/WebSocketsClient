@@ -22,11 +22,11 @@ package com.skalski.websocketsclient;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import android.os.Bundle;
-import android.content.Context;
 import android.util.Log;
 
 public class ActivitySettings extends Activity {
@@ -58,14 +58,14 @@ public class ActivitySettings extends Activity {
         }
     }
 
-    public static String pref_get_hostname (Context context){
+    public static String pref_get_hostname(Context context) {
         String value;
-        value =  PreferenceManager.getDefaultSharedPreferences(context).getString(TAG_HOSTNAME, null);
+        value = PreferenceManager.getDefaultSharedPreferences(context).getString(TAG_HOSTNAME, null);
         Log.i(TAG_LOG, "pref_get_hostname() value: " + value);
         return value;
     }
 
-    public static void pref_set_hostname (Context context, String value){
+    public static void pref_set_hostname(Context context, String value) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(TAG_HOSTNAME, value);
@@ -73,14 +73,14 @@ public class ActivitySettings extends Activity {
         Log.i(TAG_LOG, "pref_set_hostname() value: " + value);
     }
 
-    public static String pref_get_port_number (Context context){
+    public static String pref_get_port_number(Context context) {
         String value;
-        value =  PreferenceManager.getDefaultSharedPreferences(context).getString(TAG_PORT_NUMBER, null);
+        value = PreferenceManager.getDefaultSharedPreferences(context).getString(TAG_PORT_NUMBER, null);
         Log.i(TAG_LOG, "pref_get_port_number() value: " + value);
         return value;
     }
 
-    public static void pref_set_port_number (Context context, String value){
+    public static void pref_set_port_number(Context context, String value) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(TAG_PORT_NUMBER, value);
@@ -88,14 +88,14 @@ public class ActivitySettings extends Activity {
         Log.i(TAG_LOG, "pref_set_port_number() value: " + value);
     }
 
-    public static String pref_get_timeout (Context context){
+    public static String pref_get_timeout(Context context) {
         String value;
-        value =  PreferenceManager.getDefaultSharedPreferences(context).getString(TAG_TIMEOUT, null);
+        value = PreferenceManager.getDefaultSharedPreferences(context).getString(TAG_TIMEOUT, null);
         Log.i(TAG_LOG, "pref_get_timeout() value: " + value);
         return value;
     }
 
-    public static void pref_set_timeout (Context context, String value){
+    public static void pref_set_timeout(Context context, String value) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(TAG_TIMEOUT, value);
@@ -103,11 +103,11 @@ public class ActivitySettings extends Activity {
         Log.i(TAG_LOG, "pref_set_timeout() value: " + value);
     }
 
-    public static Boolean pref_notifications_disabled (Context context){
+    public static Boolean pref_notifications_disabled(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(TAG_DISABLE_NOTIFICATIONS, false);
     }
 
-    public static Boolean pref_multiple_notifications_disabled (Context context){
+    public static Boolean pref_multiple_notifications_disabled(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(TAG_DISABLE_MULTIPLE_NOTIFICATIONS, false);
     }
 }
