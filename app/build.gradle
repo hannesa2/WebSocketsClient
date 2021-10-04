@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 31
@@ -25,4 +26,5 @@ dependencies {
     implementation 'com.github.hannesa2:circular-progress-button:1.1'
     implementation 'com.github.johnpersano:supertoasts:1.3.4@aar'
     implementation 'de.psdev.licensesdialog:licensesdialog:1.5.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }

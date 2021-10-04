@@ -3,14 +3,12 @@ package com.skalski.websocketsclient.SecureWebSocktes;
 import java.net.URI;
 
 public interface WebSocket {
-    String UTF8_ENCODING = "UTF-8";
 
     /**
      * Session handler for WebSocket sessions.
      */
     interface WebSocketConnectionObserver {
         enum WebSocketCloseNotification {
-            NORMAL,
             CANNOT_CONNECT,
             CONNECTION_LOST,
             PROTOCOL_ERROR,
