@@ -27,12 +27,12 @@ import android.net.SSLCertificateSocketFactory;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.util.Log;
 import com.skalski.websocketsclient.SecureWebSocktes.WebSocket.WebSocketConnectionObserver.WebSocketCloseNotification;
 import com.skalski.websocketsclient.SecureWebSocktes.WebSocketMessage.WebSocketCloseCode;
 
+import timber.log.Timber;
+
 public class WebSocketConnection implements WebSocket {
-	private static final String TAG = "SecureWebSockets";
 	private static final String WS_URI_SCHEME = "ws";
 	private static final String WSS_URI_SCHEME = "wss";
 	private static final String WS_WRITER = "WebSocketWriter";
@@ -55,7 +55,7 @@ public class WebSocketConnection implements WebSocket {
 	private boolean mPreviousConnection = false;
 
 	public WebSocketConnection() {
-		Log.d(TAG, "WebSocket connection created.");
+		Timber.d("WebSocket connection created.");
 
 		this.mHandler = new ThreadHandler(this);
 	}
@@ -78,7 +78,7 @@ public class WebSocketConnection implements WebSocket {
 	}
 
 	private void failConnection(WebSocketCloseNotification code, String reason) {
-		Log.d(TAG, "fail connection [code = " + code + ", reason = " + reason);
+		Timber.d("fail connection [code = " + code + ", reason = " + reason);
 
 		if (mWebSocketReader != null) {
 			mWebSocketReader.quit();
@@ -89,7 +89,7 @@ public class WebSocketConnection implements WebSocket {
 				e.printStackTrace();
 			}
 		} else {
-			Log.d(TAG, "mReader already NULL");
+			Timber.d("mReader already NULL");
 		}
 
 		if (mWebSocketWriter != null) {
@@ -101,7 +101,7 @@ public class WebSocketConnection implements WebSocket {
 				e.printStackTrace();
 			}
 		} else {
-			Log.d(TAG, "mWriter already NULL");
+			Timber.d("mWriter already NULL");
 		}
 
 		if (mSocket != null) {
@@ -113,7 +113,7 @@ public class WebSocketConnection implements WebSocket {
 				}
 			});
 		} else {
-			Log.d(TAG, "mTransportChannel already NULL");
+			Timber.d("mTransportChannel already NULL");
 		}
 
 		mSocketThread.getHandler().post(new Runnable() {
@@ -126,7 +126,7 @@ public class WebSocketConnection implements WebSocket {
 
 		onClose(code, reason);
 
-		Log.d(TAG, "worker threads stopped");
+		Timber.d("worker threads stopped");
 	}
 
 	public void connect(URI webSocketURI, WebSocket.WebSocketConnectionObserver connectionObserver) throws WebSocketException {
@@ -162,7 +162,7 @@ public class WebSocketConnection implements WebSocket {
 		if (mWebSocketWriter != null && mWebSocketWriter.isAlive()) {
 			mWebSocketWriter.forward(new WebSocketMessage.Close());
 		} else {
-			Log.d(TAG, "Could not send WebSocket Close .. writer already null");
+			Timber.d("Could not send WebSocket Close .. writer already null");
 		}
 
 		this.mPreviousConnection = false;
@@ -239,11 +239,11 @@ public class WebSocketConnection implements WebSocket {
 		int interval = mWebSocketOptions.getReconnectInterval();
 		boolean shouldReconnect = mSocket.isConnected() && mPreviousConnection && (interval > 0);
 		if (shouldReconnect) {
-			Log.d(TAG, "WebSocket reconnection scheduled");
+			Timber.d("WebSocket reconnection scheduled");
 			mHandler.postDelayed(new Runnable() {
 
 				public void run() {
-					Log.d(TAG, "WebSocket reconnecting...");
+					Timber.d("WebSocket reconnecting...");
 					reconnect();
 				}
 			}, interval);
@@ -276,7 +276,7 @@ public class WebSocketConnection implements WebSocket {
 				e.printStackTrace();
 			}
 		} else {
-			Log.d(TAG, "WebSocketObserver null");
+			Timber.d("WebSocketObserver null");
 		}
 	}
 
@@ -297,7 +297,7 @@ public class WebSocketConnection implements WebSocket {
 			}
 		}
 
-		Log.d(TAG, "WebSocket writer created and started.");
+		Timber.d("WebSocket writer created and started.");
 	}
 
 	/**
@@ -315,7 +315,7 @@ public class WebSocketConnection implements WebSocket {
 			}
 		}
 
-		Log.d(TAG, "WebSocket reader created and started.");
+		Timber.d("WebSocket reader created and started.");
 	}
 
 	private void handleMessage(Message message) {
@@ -327,7 +327,7 @@ public class WebSocketConnection implements WebSocket {
 			if (webSocketObserver != null) {
 				webSocketObserver.onTextMessage(textMessage.mPayload);
 			} else {
-				Log.d(TAG, "could not call onTextMessage() .. handler already NULL");
+				Timber.d("could not call onTextMessage() .. handler already NULL");
 			}
 
 		} else if (message.obj instanceof WebSocketMessage.RawTextMessage) {
@@ -336,7 +336,7 @@ public class WebSocketConnection implements WebSocket {
 			if (webSocketObserver != null) {
 				webSocketObserver.onRawTextMessage(rawTextMessage.mPayload);
 			} else {
-				Log.d(TAG, "could not call onRawTextMessage() .. handler already NULL");
+				Timber.d("could not call onRawTextMessage() .. handler already NULL");
 			}
 
 		} else if (message.obj instanceof WebSocketMessage.BinaryMessage) {
@@ -345,12 +345,12 @@ public class WebSocketConnection implements WebSocket {
 			if (webSocketObserver != null) {
 				webSocketObserver.onBinaryMessage(binaryMessage.mPayload);
 			} else {
-				Log.d(TAG, "could not call onBinaryMessage() .. handler already NULL");
+				Timber.d("could not call onBinaryMessage() .. handler already NULL");
 			}
 
 		} else if (message.obj instanceof WebSocketMessage.Ping) {
 			WebSocketMessage.Ping ping = (WebSocketMessage.Ping) message.obj;
-			Log.d(TAG, "WebSockets Ping received");
+			Timber.d("WebSockets Ping received");
 
 			WebSocketMessage.Pong pong = new WebSocketMessage.Pong();
 			pong.mPayload = ping.mPayload;
@@ -359,25 +359,25 @@ public class WebSocketConnection implements WebSocket {
 		} else if (message.obj instanceof WebSocketMessage.Pong) {
 			WebSocketMessage.Pong pong = (WebSocketMessage.Pong) message.obj;
 
-			Log.d(TAG, "WebSockets Pong received" + pong.mPayload);
+			Timber.d("WebSockets Pong received" + pong.mPayload);
 
 		} else if (message.obj instanceof WebSocketMessage.Close) {
 			WebSocketMessage.Close close = (WebSocketMessage.Close) message.obj;
 
-			Log.d(TAG, "WebSockets Close received (" + close.getCode() + " - " + close.getReason() + ")");
+			Timber.d("WebSockets Close received (" + close.getCode() + " - " + close.getReason() + ")");
 
 			mWebSocketWriter.forward(new WebSocketMessage.Close(WebSocketCloseCode.NORMAL));
 
 		} else if (message.obj instanceof WebSocketMessage.ServerHandshake) {
 			WebSocketMessage.ServerHandshake serverHandshake = (WebSocketMessage.ServerHandshake) message.obj;
 
-			Log.d(TAG, "opening handshake received");
+			Timber.d("opening handshake received");
 
 			if (serverHandshake.mSuccess) {
 				if (webSocketObserver != null) {
 					webSocketObserver.onOpen();
 				} else {
-					Log.d(TAG, "could not call onOpen() .. handler already NULL");
+					Timber.d("could not call onOpen() .. handler already NULL");
 				}
 				mPreviousConnection = true;
 			}
@@ -427,7 +427,7 @@ public class WebSocketConnection implements WebSocket {
 			}
 
 			Looper.loop();
-			Log.d(TAG, "SocketThread exited.");
+			Timber.d("SocketThread exited.");
 		}
 
 		public void startConnection() {
