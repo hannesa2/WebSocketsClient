@@ -20,7 +20,6 @@ package com.skalski.websocketsclient.SecureWebSocktes;
 
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.util.Pair;
 
 import com.skalski.websocketsclient.SecureWebSocktes.WebSocketMessage.WebSocketCloseCode;
@@ -33,6 +32,8 @@ import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
+import timber.log.Timber;
+
 /**
  * WebSocket reader, the receiving leg of a WebSockets connection.
  * This runs on it's own background thread and posts messages to master
@@ -41,7 +42,6 @@ import java.nio.charset.StandardCharsets;
  * which gracefully shuts down the background receiver thread.
  */
 public class WebSocketReader extends Thread {
-    private static final String TAG = "SecureWebSockets";
 
     private enum ReaderState {
         STATE_CLOSED,
@@ -85,7 +85,7 @@ public class WebSocketReader extends Thread {
         this.mFrameHeader = null;
         this.mState = ReaderState.STATE_CONNECTING;
 
-        Log.d(TAG, "WebSocket reader created.");
+        Timber.d("WebSocket reader created.");
     }
 
     /**
@@ -93,7 +93,7 @@ public class WebSocketReader extends Thread {
      */
     public void quit() {
         mStopped = true;
-        Log.d(TAG, "quit");
+        Timber.d("quit");
     }
 
     /**
@@ -550,7 +550,7 @@ public class WebSocketReader extends Thread {
         mApplicationBuffer.position(end);
         mApplicationBuffer.get(statusBuf, 0, statusMessageLength);
         String statusMessage = new String(statusBuf, StandardCharsets.UTF_8);
-        Log.w(TAG, String.format("Status: %d (%s)", statusCode, statusMessage));
+        Timber.w("Status:" + statusCode + "(" + statusMessage + ")");
         return new Pair<Integer, String>(statusCode, statusMessage);
     }
 
@@ -584,13 +584,13 @@ public class WebSocketReader extends Thread {
         try {
             inputStream = mSocket.getInputStream();
         } catch (IOException e) {
-            Log.e(TAG, e.getLocalizedMessage());
+            Timber.e(e);
             return;
         }
 
         this.mInputStream = inputStream;
 
-        Log.d(TAG, "WebSocker reader running.");
+        Timber.d("WebSocker reader running.");
         mApplicationBuffer.clear();
 
         while (!mStopped) {
@@ -602,36 +602,36 @@ public class WebSocketReader extends Thread {
                     while (consumeData()) {
                     }
                 } else if (bytesRead == -1) {
-                    Log.d(TAG, "run() : ConnectionLost");
+                    Timber.d("run() : ConnectionLost");
 
                     notify(new WebSocketMessage.ConnectionLost());
                     this.mStopped = true;
                 } else {
-                    Log.e(TAG, "WebSocketReader read() failed.");
+                    Timber.e("WebSocketReader read() failed.");
                 }
 
             } catch (WebSocketException e) {
-                Log.d(TAG, "run() : WebSocketException (" + e.toString() + ")");
+                Timber.d("run() : WebSocketException (" + e.toString() + ")");
 
                 // wrap the exception and notify master
                 notify(new WebSocketMessage.ProtocolViolation(e));
             } catch (SocketException e) {
-                Log.d(TAG, "run() : SocketException (" + e.toString() + ")");
+                Timber.d("run() : SocketException (" + e.toString() + ")");
 
                 // wrap the exception and notify master
                 notify(new WebSocketMessage.ConnectionLost());
             } catch (IOException e) {
-                Log.d(TAG, "run() : IOException (" + e.toString() + ")");
+                Timber.d("run() : IOException (" + e.toString() + ")");
 
                 notify(new WebSocketMessage.ConnectionLost());
             } catch (Exception e) {
-                Log.d(TAG, "run() : Exception (" + e.toString() + ")");
+                Timber.d("run() : Exception (" + e.toString() + ")");
 
                 // wrap the exception and notify master
                 notify(new WebSocketMessage.Error(e));
             }
         }
 
-        Log.d(TAG, "WebSocket reader ended.");
+        Timber.d("WebSocket reader ended.");
     }
 }

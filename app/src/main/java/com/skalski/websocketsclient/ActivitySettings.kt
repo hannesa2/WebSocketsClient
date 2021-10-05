@@ -5,7 +5,7 @@ import android.content.Context
 import android.os.Bundle
 import android.preference.PreferenceFragment
 import android.preference.PreferenceManager
-import android.util.Log
+import timber.log.Timber
 
 class ActivitySettings : Activity() {
     public override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,7 +33,7 @@ class ActivitySettings : Activity() {
         private const val TAG_DISABLE_MULTIPLE_NOTIFICATIONS = "disable_multiple_notifications"
         fun pref_get_hostname(context: Context?): String? {
             val value: String? = PreferenceManager.getDefaultSharedPreferences(context).getString(TAG_HOSTNAME, null)
-            Log.i(TAG_LOG, "pref_get_hostname() value: $value")
+            Timber.i("pref_get_hostname() value: $value")
             return value
         }
 
@@ -42,12 +42,12 @@ class ActivitySettings : Activity() {
             val editor = sharedPreferences.edit()
             editor.putString(TAG_HOSTNAME, value)
             editor.apply()
-            Log.i(TAG_LOG, "pref_set_hostname() value: $value")
+            Timber.i("pref_set_hostname() value: $value")
         }
 
         fun pref_get_port_number(context: Context?): String? {
             val value: String? = PreferenceManager.getDefaultSharedPreferences(context).getString(TAG_PORT_NUMBER, null)
-            Log.i(TAG_LOG, "pref_get_port_number() value: $value")
+            Timber.i("pref_get_port_number() value: $value")
             return value
         }
 
@@ -56,12 +56,12 @@ class ActivitySettings : Activity() {
             val editor = sharedPreferences.edit()
             editor.putString(TAG_PORT_NUMBER, value)
             editor.apply()
-            Log.i(TAG_LOG, "pref_set_port_number() value: $value")
+            Timber.i("pref_set_port_number() value: $value")
         }
 
         fun prefTimeout(context: Context?): String? {
             val value: String? = PreferenceManager.getDefaultSharedPreferences(context).getString(TAG_TIMEOUT, null)
-            Log.i(TAG_LOG, "pref_get_timeout() value: $value")
+            Timber.i("pref_get_timeout() value: $value")
             return value
         }
 
@@ -70,7 +70,7 @@ class ActivitySettings : Activity() {
             val editor = sharedPreferences.edit()
             editor.putString(TAG_TIMEOUT, value)
             editor.apply()
-            Log.i(TAG_LOG, "pref_set_timeout() value: $value")
+            Timber.i("pref_set_timeout() value: $value")
         }
 
         fun pref_notifications_disabled(context: Context?): Boolean {

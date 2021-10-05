@@ -22,7 +22,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.util.Base64;
-import android.util.Log;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -33,6 +32,8 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Random;
 
+import timber.log.Timber;
+
 /**
  * WebSocket writer, the sending leg of a WebSockets connection.
  * This is run on it's background thread with it's own message loop.
@@ -42,7 +43,6 @@ import java.util.Random;
  * underlying TCP socket.
  */
 public class WebSocketWriter extends Thread {
-    private static final String TAG = "SecureWebSockets";
 
     private static final int WEB_SOCKETS_VERSION = 13;
     private static final String CRLF = "\r\n";
@@ -63,7 +63,7 @@ public class WebSocketWriter extends Thread {
 
         this.mApplicationBuffer = ByteBuffer.allocate(options.getMaxFramePayloadSize() + 14);
 
-        Log.d(TAG, "WebSocket writer created.");
+        Timber.d("WebSocket writer created.");
     }
 
     /**
@@ -100,7 +100,7 @@ public class WebSocketWriter extends Thread {
         return ba;
     }
 
-    private void sendClientHandshake(WebSocketMessage.ClientHandshake message) throws IOException {
+    private void sendClientHandshake(WebSocketMessage.ClientHandshake message) {
         String path = message.getURI().getPath();
         if (path == null || path.length() == 0) {
             path = "/";
@@ -131,7 +131,7 @@ public class WebSocketWriter extends Thread {
 
     private void sendClose(WebSocketMessage.Close message) throws IOException, WebSocketException {
         if (message.getCode() > 0) {
-            byte[] payload = null;
+            byte[] payload;
 
             if (message.getReason() != null && !(message.getReason().length() > 0)) {
                 byte[] pReason = message.getReason().getBytes(StandardCharsets.UTF_8);
@@ -321,7 +321,7 @@ public class WebSocketWriter extends Thread {
         } else if (msg instanceof WebSocketMessage.Quit) {
             Looper.myLooper().quit();
 
-            Log.d(TAG, "WebSocket writer ended.");
+            Timber.d("WebSocket writer ended.");
         } else {
             processAppMessage(msg);
         }
@@ -335,11 +335,11 @@ public class WebSocketWriter extends Thread {
 
             mOutputStream.write(mApplicationBuffer.array(), mApplicationBuffer.position(), mApplicationBuffer.limit());
         } catch (SocketException e) {
-            Log.e(TAG, "run() : SocketException (" + e.toString() + ")");
+            Timber.e("SocketException (" + e.toString() + ")");
 
             notify(new WebSocketMessage.ConnectionLost());
         } catch (IOException e) {
-            Log.e(TAG, "run() : IOException (" + e.toString() + ")");
+            Timber.e("IOException (" + e.toString() + ")");
 
         } catch (Exception e) {
             notify(new WebSocketMessage.Error(e));
@@ -352,7 +352,7 @@ public class WebSocketWriter extends Thread {
      *
      * @param msg Message from foreground thread to process.
      */
-    protected void processAppMessage(Object msg) throws WebSocketException, IOException {
+    protected void processAppMessage(Object msg) throws WebSocketException {
         throw new WebSocketException("unknown message received by WebSocketWriter");
     }
 
@@ -363,7 +363,7 @@ public class WebSocketWriter extends Thread {
         try {
             outputStream = mSocket.getOutputStream();
         } catch (IOException e) {
-            Log.e(TAG, e.getLocalizedMessage());
+            Timber.e(e.getLocalizedMessage());
         }
 
         this.mOutputStream = outputStream;
@@ -371,7 +371,7 @@ public class WebSocketWriter extends Thread {
         this.mHandler = new ThreadHandler(this);
 
         synchronized (this) {
-            Log.d(TAG, "WebSocker writer running.");
+            Timber.d("WebSocker writer running.");
             notifyAll();
         }
 
@@ -384,7 +384,7 @@ public class WebSocketWriter extends Thread {
 
         public ThreadHandler(WebSocketWriter webSocketWriter) {
             super();
-            this.mWebSocketWriterReference = new WeakReference<WebSocketWriter>(webSocketWriter);
+            this.mWebSocketWriterReference = new WeakReference<>(webSocketWriter);
         }
 
         @Override
