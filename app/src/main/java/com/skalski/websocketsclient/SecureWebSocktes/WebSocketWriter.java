@@ -18,19 +18,20 @@
 
 package com.skalski.websocketsclient.SecureWebSocktes;
 
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
+import android.util.Base64;
+import android.util.Log;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.ref.WeakReference;
 import java.net.Socket;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Random;
-
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
-import android.util.Base64;
-import android.util.Log;
 
 /**
  * WebSocket writer, the sending leg of a WebSockets connection.
@@ -81,42 +82,24 @@ public class WebSocketWriter extends Thread {
         mHandler.sendMessage(msg);
     }
 
-    /**
-     * Notify the master (foreground thread).
-     *
-     * @param message Message to send to master.
-     */
     private void notify(Object message) {
         Message msg = mWebSocketConnectionHandler.obtainMessage();
         msg.obj = message;
         mWebSocketConnectionHandler.sendMessage(msg);
     }
 
-    /**
-     * Create new key for WebSockets handshake.
-     *
-     * @return WebSockets handshake key (Base64 encoded).
-     */
     private String newHandshakeKey() {
         final byte[] ba = new byte[16];
         mRandom.nextBytes(ba);
         return Base64.encodeToString(ba, Base64.NO_WRAP);
     }
 
-    /**
-     * Create new (random) frame mask.
-     *
-     * @return Frame mask (4 octets).
-     */
     private byte[] newFrameMask() {
         final byte[] ba = new byte[4];
         mRandom.nextBytes(ba);
         return ba;
     }
 
-    /**
-     * Send WebSocket client handshake.
-     */
     private void sendClientHandshake(WebSocketMessage.ClientHandshake message) throws IOException {
         String path = message.getURI().getPath();
         if (path == null || path.length() == 0) {
@@ -146,15 +129,12 @@ public class WebSocketWriter extends Thread {
         mApplicationBuffer.put((CRLF).getBytes());
     }
 
-    /**
-     * Send WebSockets close.
-     */
     private void sendClose(WebSocketMessage.Close message) throws IOException, WebSocketException {
         if (message.getCode() > 0) {
             byte[] payload = null;
 
             if (message.getReason() != null && !(message.getReason().length() > 0)) {
-                byte[] pReason = message.getReason().getBytes(WebSocket.UTF8_ENCODING);
+                byte[] pReason = message.getReason().getBytes(StandardCharsets.UTF_8);
                 payload = new byte[2 + pReason.length];
                 for (int i = 0; i < pReason.length; ++i) {
                     payload[i + 2] = pReason[i];
@@ -163,7 +143,7 @@ public class WebSocketWriter extends Thread {
                 payload = new byte[2];
             }
 
-            if (payload != null && payload.length > 125) {
+            if (payload.length > 125) {
                 throw new WebSocketException("close payload exceeds 125 octets");
             }
 
@@ -211,7 +191,7 @@ public class WebSocketWriter extends Thread {
      * Send WebSockets text message.
      */
     private void sendTextMessage(WebSocketMessage.TextMessage message) throws IOException, WebSocketException {
-        byte[] payload = message.mPayload.getBytes(WebSocket.UTF8_ENCODING);
+        byte[] payload = message.mPayload.getBytes(StandardCharsets.UTF_8);
         if (payload.length > mWebSocketOptions.getMaxMessagePayloadSize()) {
             throw new WebSocketException("message payload exceeds payload limit");
         }
