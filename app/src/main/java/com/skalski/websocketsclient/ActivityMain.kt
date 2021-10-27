@@ -19,11 +19,11 @@ import com.github.johnpersano.supertoasts.SuperActivityToast
 import com.github.johnpersano.supertoasts.SuperToast
 import com.github.johnpersano.supertoasts.util.OnClickWrapper
 import com.github.johnpersano.supertoasts.util.Wrappers
-import com.skalski.websocketsclient.SecureWebSocktes.WebSocket.WebSocketConnectionObserver
-import com.skalski.websocketsclient.SecureWebSocktes.WebSocket.WebSocketConnectionObserver.WebSocketCloseNotification
-import com.skalski.websocketsclient.SecureWebSocktes.WebSocketConnection
-import com.skalski.websocketsclient.SecureWebSocktes.WebSocketException
-import com.skalski.websocketsclient.SecureWebSocktes.WebSocketOptions
+import com.skalski.websocketsclient.secureWebSocktes.WebSocket.WebSocketConnectionObserver
+import com.skalski.websocketsclient.secureWebSocktes.WebSocket.WebSocketConnectionObserver.WebSocketCloseNotification
+import com.skalski.websocketsclient.secureWebSocktes.WebSocketConnection
+import com.skalski.websocketsclient.secureWebSocktes.WebSocketException
+import com.skalski.websocketsclient.secureWebSocktes.WebSocketOptions
 import de.psdev.licensesdialog.LicensesDialog
 import org.json.JSONException
 import org.json.JSONObject
@@ -195,9 +195,8 @@ class ActivityMain : Activity(), WebSocketConnectionObserver {
                 }
             }
         } catch (e: JSONException) {
-            /* JSON object is not valid */
-            showInfo(resources.getString(R.string.info_msg_4), false)
-            Timber.e("Received invalid JSON from server")
+            /* String value */
+            appendText(cmdOutput, "[SERVER] $payload".trimIndent(), Color.parseColor("#7DA30E"))
         }
     }
 

@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.skalski.websocketsclient.SecureWebSocktes;
+package com.skalski.websocketsclient.secureWebSocktes;
 
 import java.net.URI;
 

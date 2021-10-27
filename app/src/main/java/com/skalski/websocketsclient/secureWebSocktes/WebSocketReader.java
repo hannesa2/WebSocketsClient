@@ -16,14 +16,15 @@
  *
  ******************************************************************************/
 
-package com.skalski.websocketsclient.SecureWebSocktes;
+package com.skalski.websocketsclient.secureWebSocktes;
 
 import android.os.Handler;
 import android.os.Message;
 import android.util.Pair;
 
-import com.skalski.websocketsclient.SecureWebSocktes.WebSocketMessage.WebSocketCloseCode;
+import com.skalski.websocketsclient.secureWebSocktes.WebSocketMessage.WebSocketCloseCode;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -52,12 +53,11 @@ public class WebSocketReader extends Thread {
 
     private final Handler mWebSocketConnectionHandler;
     private final Socket mSocket;
-    private InputStream mInputStream;
     private final WebSocketOptions mWebSocketOptions;
     private volatile boolean mStopped = false;
     private final byte[] mNetworkBuffer;
     private final ByteBuffer mApplicationBuffer;
-    private final NoCopyByteArrayOutputStream mMessagePayload;
+    private final ByteArrayOutputStream mMessagePayload;
     private ReaderState mState;
     private boolean mInsideMessage = false;
     private int mMessageOpcode;
@@ -80,7 +80,7 @@ public class WebSocketReader extends Thread {
 
         this.mNetworkBuffer = new byte[4096];
         this.mApplicationBuffer = ByteBuffer.allocateDirect(options.getMaxFramePayloadSize() + 14);
-        this.mMessagePayload = new NoCopyByteArrayOutputStream(options.getMaxMessagePayloadSize());
+        this.mMessagePayload = new ByteArrayOutputStream(options.getMaxMessagePayloadSize());
 
         this.mFrameHeader = null;
         this.mState = ReaderState.STATE_CONNECTING;
@@ -168,7 +168,7 @@ public class WebSocketReader extends Thread {
                 }
 
                 int mask_len = masked ? 4 : 0;
-                int header_len = 0;
+                int header_len;
 
                 if (payload_len1 < 126) {
                     header_len = 2 + mask_len;
@@ -186,7 +186,7 @@ public class WebSocketReader extends Thread {
 
                     // determine frame payload length
                     int i = 2;
-                    long payload_len = 0;
+                    long payload_len;
                     if (payload_len1 == 126) {
                         payload_len = ((0xff & mApplicationBuffer.get(i)) << 8) | (0xff & mApplicationBuffer.get(i + 1));
                         if (payload_len < 126) {
@@ -194,14 +194,14 @@ public class WebSocketReader extends Thread {
                         }
                         i += 2;
                     } else if (payload_len1 == 127) {
-                        if ((0x80 & mApplicationBuffer.get(i + 0)) != 0) {
+                        if ((0x80 & mApplicationBuffer.get(i)) != 0) {
                             throw new WebSocketException("invalid data frame length (> 2^63)");
                         }
-                        payload_len = ((0xff & mApplicationBuffer.get(i + 0)) << 56) |
-                                ((0xff & mApplicationBuffer.get(i + 1)) << 48) |
-                                ((0xff & mApplicationBuffer.get(i + 2)) << 40) |
-                                ((0xff & mApplicationBuffer.get(i + 3)) << 32) |
-                                ((0xff & mApplicationBuffer.get(i + 4)) << 24) |
+                        payload_len = ((long) (0xff & mApplicationBuffer.get(i)) << 56) |
+                                ((long) (0xff & mApplicationBuffer.get(i + 1)) << 48) |
+                                ((long) (0xff & mApplicationBuffer.get(i + 2)) << 40) |
+                                ((long) (0xff & mApplicationBuffer.get(i + 3)) << 32) |
+                                ((long) (0xff & mApplicationBuffer.get(i + 4)) << 24) |
                                 ((0xff & mApplicationBuffer.get(i + 5)) << 16) |
                                 ((0xff & mApplicationBuffer.get(i + 6)) << 8) |
                                 ((0xff & mApplicationBuffer.get(i + 7)));
@@ -234,7 +234,6 @@ public class WebSocketReader extends Thread {
                         }
                         mFrameHeader.setMask(mask);
 
-                        i += 4;
                     } else {
                         mFrameHeader.setMask(null);
                     }
@@ -243,18 +242,14 @@ public class WebSocketReader extends Thread {
                     return mFrameHeader.getPayloadLength() == 0 || mApplicationBuffer.position() >= mFrameHeader.getTotalLength();
 
                 } else {
-
                     // need more data
                     return false;
                 }
             } else {
-
                 // need more data
                 return false;
             }
-
         } else {
-
             // within frame
             // see if we buffered complete frame
             if (mApplicationBuffer.position() >= mFrameHeader.getTotalLength()) {
@@ -477,7 +472,7 @@ public class WebSocketReader extends Thread {
 
         boolean res = false;
         for (int pos = mApplicationBuffer.position() - 4; pos >= 0; --pos) {
-            if (mApplicationBuffer.get(pos + 0) == 0x0d &&
+            if (mApplicationBuffer.get(pos) == 0x0d &&
                     mApplicationBuffer.get(pos + 1) == 0x0a &&
                     mApplicationBuffer.get(pos + 2) == 0x0d &&
                     mApplicationBuffer.get(pos + 3) == 0x0a) {
@@ -521,7 +516,7 @@ public class WebSocketReader extends Thread {
         return res;
     }
 
-    private Pair<Integer, String> parseHTTPStatus() throws UnsupportedEncodingException {
+    private Pair<Integer, String> parseHTTPStatus() {
         int beg, end;
         // Find first space
         for (beg = 4; beg < mApplicationBuffer.position(); ++beg) {
@@ -551,7 +546,7 @@ public class WebSocketReader extends Thread {
         mApplicationBuffer.get(statusBuf, 0, statusMessageLength);
         String statusMessage = new String(statusBuf, StandardCharsets.UTF_8);
         Timber.w("Status:" + statusCode + "(" + statusMessage + ")");
-        return new Pair<Integer, String>(statusCode, statusMessage);
+        return new Pair<>(statusCode, statusMessage);
     }
 
     /**
@@ -580,7 +575,7 @@ public class WebSocketReader extends Thread {
             notifyAll();
         }
 
-        InputStream inputStream = null;
+        InputStream inputStream;
         try {
             inputStream = mSocket.getInputStream();
         } catch (IOException e) {
@@ -588,7 +583,7 @@ public class WebSocketReader extends Thread {
             return;
         }
 
-        this.mInputStream = inputStream;
+        InputStream mInputStream = inputStream;
 
         Timber.d("WebSocker reader running.");
         mApplicationBuffer.clear();

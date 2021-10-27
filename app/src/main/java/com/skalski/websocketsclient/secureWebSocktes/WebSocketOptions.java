@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.skalski.websocketsclient.SecureWebSocktes;
+package com.skalski.websocketsclient.secureWebSocktes;
 
 /**
  * WebSockets connection options. This can be supplied to WebSocketConnection in connect().

@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.skalski.websocketsclient.SecureWebSocktes;
+package com.skalski.websocketsclient.secureWebSocktes;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -27,8 +27,8 @@ import android.net.SSLCertificateSocketFactory;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import com.skalski.websocketsclient.SecureWebSocktes.WebSocket.WebSocketConnectionObserver.WebSocketCloseNotification;
-import com.skalski.websocketsclient.SecureWebSocktes.WebSocketMessage.WebSocketCloseCode;
+import com.skalski.websocketsclient.secureWebSocktes.WebSocket.WebSocketConnectionObserver.WebSocketCloseNotification;
+import com.skalski.websocketsclient.secureWebSocktes.WebSocketMessage.WebSocketCloseCode;
 
 import timber.log.Timber;
 

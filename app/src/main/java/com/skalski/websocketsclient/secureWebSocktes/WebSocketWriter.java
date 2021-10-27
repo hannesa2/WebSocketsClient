@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.skalski.websocketsclient.SecureWebSocktes;
+package com.skalski.websocketsclient.secureWebSocktes;
 
 import android.os.Handler;
 import android.os.Looper;
