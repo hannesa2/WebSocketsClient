@@ -1,7 +1,6 @@
 package com.skalski.websocketsclient
 
 import android.app.Activity
-import android.app.Notification
 import android.app.NotificationManager
 import android.content.Intent
 import android.graphics.Color
@@ -14,6 +13,7 @@ import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.TextView.OnEditorActionListener
+import androidx.core.app.NotificationCompat
 import com.dd.CircularProgressButton
 import com.github.johnpersano.supertoasts.SuperActivityToast
 import com.github.johnpersano.supertoasts.SuperToast
@@ -84,7 +84,7 @@ class ActivityMain : Activity(), WebSocketConnectionObserver {
             }
         })
 
-        cmdInput.setOnEditorActionListener(OnEditorActionListener { v, actionId, event ->
+        cmdInput.setOnEditorActionListener(OnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 wsSend()
                 return@OnEditorActionListener true
@@ -153,7 +153,7 @@ class ActivityMain : Activity(), WebSocketConnectionObserver {
     }
 
     override fun onOpen() {
-        Timber.i("onOpen() - connection opened to: ${wsURI}")
+        Timber.i("onOpen() - connection opened to: $wsURI")
         isConnected = true
         connectButton.progress = 100
     }
@@ -178,11 +178,10 @@ class ActivityMain : Activity(), WebSocketConnectionObserver {
                             if (ActivitySettings.pref_multiple_notifications_disabled(baseContext)) 0 else System.currentTimeMillis()
                                 .toInt()
 
-                        val newNotification = Notification.Builder(this)
+                        val newNotification = NotificationCompat.Builder(this, channelId)
                             .setContentTitle(resources.getString(R.string.app_name))
                             .setContentText(jsonObj.getString(TAG_JSON_MSG))
                             .setSmallIcon(R.drawable.ic_launcher).build()
-                        newNotification.defaults = newNotification.defaults or Notification.DEFAULT_ALL
                         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
                         notificationManager.notify(notificationId, newNotification)
                         appendText(cmdOutput, "[SERVER] Asynchronous Notification\n", Color.parseColor("#ff0099cc"))
@@ -208,7 +207,7 @@ class ActivityMain : Activity(), WebSocketConnectionObserver {
         Timber.e("We didn't expect 'BinaryMessage'")
     }
 
-    fun showInfo(info: String?, showButton: Boolean) {
+    private fun showInfo(info: String?, showButton: Boolean) {
         val superActivityToast: SuperActivityToast
         if (showButton) {
             superActivityToast = SuperActivityToast(this@ActivityMain, SuperToast.Type.BUTTON)
@@ -266,6 +265,7 @@ class ActivityMain : Activity(), WebSocketConnectionObserver {
     companion object {
         private const val TAG_JSON_TYPE = "Type"
         private const val TAG_JSON_MSG = "Message"
+        private const val channelId = "chn-01"
 
         fun appendText(textView: TextView, text: String, textColor: Int) {
             val start: Int = textView.text.length
