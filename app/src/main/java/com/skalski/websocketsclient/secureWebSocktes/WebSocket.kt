@@ -1,27 +1,22 @@
-package com.skalski.websocketsclient.secureWebSocktes;
+package com.skalski.websocketsclient.secureWebSocktes
 
-import java.net.URI;
+import kotlin.Throws
+import java.net.URI
 
-public interface WebSocket {
-
+interface WebSocket {
     /**
      * Session handler for WebSocket sessions.
      */
     interface WebSocketConnectionObserver {
-        enum WebSocketCloseNotification {
-            CANNOT_CONNECT,
-            CONNECTION_LOST,
-            PROTOCOL_ERROR,
-            INTERNAL_ERROR,
-            SERVER_ERROR,
-            RECONNECT
+        enum class WebSocketCloseNotification {
+            CANNOT_CONNECT, CONNECTION_LOST, PROTOCOL_ERROR, INTERNAL_ERROR, SERVER_ERROR, RECONNECT
         }
 
         /**
          * Fired when the WebSockets connection has been established.
          * After this happened, messages may be sent.
          */
-        void onOpen();
+        fun onOpen()
 
         /**
          * Fired when the WebSockets connection has deceased (or could
@@ -30,7 +25,7 @@ public interface WebSocket {
          * @param code   Close code.
          * @param reason Close reason (human-readable).
          */
-        void onClose(WebSocketCloseNotification code, String reason);
+        fun onClose(code: WebSocketCloseNotification, reason: String)
 
         /**
          * Fired when a text message has been received (and text
@@ -38,7 +33,7 @@ public interface WebSocket {
          *
          * @param payload Text message payload or null (empty payload).
          */
-        void onTextMessage(String payload);
+        fun onTextMessage(payload: String)
 
         /**
          * Fired when a text message has been received (and text
@@ -46,27 +41,24 @@ public interface WebSocket {
          *
          * @param payload Text message payload as raw UTF-8 or null (empty payload).
          */
-        void onRawTextMessage(byte[] payload);
+        fun onRawTextMessage(payload: ByteArray)
 
         /**
          * Fired when a binary message has been received.
          *
          * @param payload Binar message payload or null (empty payload).
          */
-        void onBinaryMessage(byte[] payload);
+        fun onBinaryMessage(payload: ByteArray)
     }
 
-    void connect(URI uri, WebSocketConnectionObserver observer) throws WebSocketException;
+    @Throws(WebSocketException::class)
+    fun connect(uri: URI, observer: WebSocketConnectionObserver)
 
-    void connect(URI uri, WebSocketConnectionObserver observer, WebSocketOptions options) throws WebSocketException;
-
-    void disconnect();
-
-    boolean isConnected();
-
-    void sendBinaryMessage(byte[] payload);
-
-    void sendRawTextMessage(byte[] payload);
-
-    void sendTextMessage(String payload);
+    @Throws(WebSocketException::class)
+    fun connect(uri: URI?, observer: WebSocketConnectionObserver, options: WebSocketOptions)
+    fun disconnect()
+    val isConnected: Boolean
+    fun sendBinaryMessage(payload: ByteArray)
+    fun sendRawTextMessage(payload: ByteArray)
+    fun sendTextMessage(payload: String)
 }
