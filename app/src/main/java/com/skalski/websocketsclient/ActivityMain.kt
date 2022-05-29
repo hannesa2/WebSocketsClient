@@ -75,7 +75,8 @@ class ActivityMain : Activity(), WebSocketConnectionObserver {
                 ActivitySettings.pref_set_port_number(baseContext, portNumber.text.toString())
                 ActivitySettings.pref_set_timeout(baseContext, timeout.text.toString())
 
-                /* connect */if (!wsConnect()) {
+                /* connect */
+                if (!wsConnect()) {
                     showInfo(resources.getString(R.string.info_msg_2), false)
                     connectButton.progress = -1
                 }
